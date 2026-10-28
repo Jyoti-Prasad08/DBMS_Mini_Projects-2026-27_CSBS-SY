@@ -1,0 +1,33 @@
+* { box-sizing: border-box; }
+body { margin: 0; font-family: "Segoe UI", Arial, sans-serif; background: #f1f6ef; color: #1f2d1f; }
+nav { background: #2e7d32; padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; }
+nav .brand { color: #fff; font-weight: 700; font-size: 1.15rem; margin-right: 12px; text-decoration: none; }
+nav a { color: #e8f5e9; text-decoration: none; font-size: .9rem; padding: 4px 6px; border-radius: 4px; }
+nav a:hover, nav a.active { background: rgba(255,255,255,.2); color: #fff; }
+main { max-width: 1200px; margin: 24px auto; padding: 0 16px; }
+h1, h2 { margin-top: 0; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.toolbar h2 { margin: 0; }
+input, select { padding: 8px 10px; border: 1px solid #b8c9b8; border-radius: 6px; font-size: .95rem; width: 100%; }
+.toolbar input { width: 220px; }
+button, .btn { background: #2e7d32; color: #fff; border: 0; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: .9rem; text-decoration: none; display: inline-block; }
+button:hover, .btn:hover { background: #256528; }
+button.edit { background: #1565c0; padding: 5px 10px; } button.del { background: #c62828; padding: 5px 10px; }
+button.grey { background: #757575; }
+.tablewrap { overflow-x: auto; background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+th { background: #c8e6c9; text-align: left; text-transform: capitalize; white-space: nowrap; }
+th, td { padding: 9px 12px; border-bottom: 1px solid #e3eae3; }
+tr:hover td { background: #f6fbf6; }
+.empty { text-align: center; color: #777; padding: 20px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; }
+.card { background: #fff; padding: 16px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,.12); text-decoration: none; color: inherit; transition: transform .15s; }
+a.card:hover { transform: translateY(-3px); }
+.card small { color: #666; } .card .num { font-size: 1.9rem; color: #2e7d32; }
+.revenue { background: #2e7d32; color: #fff; margin-bottom: 18px; } .revenue .num { color: #fff; }
+dialog { border: 0; border-radius: 10px; padding: 22px; width: min(520px, 94vw); box-shadow: 0 6px 30px rgba(0,0,0,.35); }
+dialog::backdrop { background: rgba(0,0,0,.4); }
+label { display: block; margin: 10px 0 4px; font-size: .85rem; text-transform: capitalize; color: #355; }
+.actions { margin-top: 18px; display: flex; gap: 8px; } .note { color: #666; font-size: .85rem; margin-top: 10px; }
+.error { color: #c62828; margin-top: 8px; }
+h3 { margin: 26px 0 8px; }
