@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LostLink — Smart Campus Lost &amp; Found System</title>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration matching LostLink Palette -->
+<script data-purpose="tailwind-config">
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            midnight: '#050D24',
+            deepNavy: '#081B43',
+            royalBlue: '#1266E8',
+            electricBlue: '#2998FF',
+            lensGlow: 'rgba(41, 152, 255, 0.35)',
+            surfaceCard: 'rgba(11, 28, 68, 0.72)',
+            surfaceBorder: 'rgba(41, 152, 255, 0.22)'
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            display: ['Cabinet Grotesk', 'Inter', 'sans-serif']
+          },
+          animation: {
+            'float-slow': 'float 6s ease-in-out infinite',
+            'pulse-glow': 'pulseGlow 3s ease-in-out infinite'
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+              '50%': { transform: 'translateY(-12px) rotate(1deg)' }
+            },
+            pulseGlow: {
+              '0%, 100%': { opacity: '0.4', transform: 'scale(1)' },
+              '50%': { opacity: '0.7', transform: 'scale(1.06)' }
+            }
+          }
+        }
+      }
+    };
+  </script>
+<!-- Typography & Structural Styles -->
+<style data-purpose="typography-and-base">
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+    
+    body {
+      background-color: #050D24;
+      color: #E2E8F0;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #050D24;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1266E8;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #2998FF;
+    }
+  </style>
+<!-- Lens FX, Glassmorphism and Parallax styles -->
+<style data-purpose="visual-effects">
+    .glass-card {
+      background: linear-gradient(135deg, rgba(14, 34, 78, 0.75) 0%, rgba(8, 27, 67, 0.85) 100%);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(41, 152, 255, 0.2);
+    }
+    
+    .glass-card-hover {
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .glass-card-hover:hover {
+      transform: translateY(-6px);
+      border-color: rgba(41, 152, 255, 0.55);
+      box-shadow: 0 20px 35px -10px rgba(18, 102, 232, 0.32);
+    }
+
+    .radial-hero-bg {
+      background: radial-gradient(circle at 65% 42%, #0e2a6d 0%, #081B43 45%, #050D24 95%);
+    }
+
+    /* Moving flying clone styles */
+    .morph-flying-clone {
+      position: fixed;
+      z-index: 99999;
+      pointer-events: none;
+      transition: transform 0.65s cubic-bezier(0.2, 0.9, 0.25, 1), opacity 0.65s ease, filter 0.65s ease;
+      will-change: transform, opacity;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #introOverlay {
+        display: none !important;
+      }
+      .animate-float-slow {
+        animation: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-midnight text-slate-100 antialiased selection:bg-electricBlue selection:text-white">
+<!-- BEGIN: IntroCinematicOverlay -->
+<div class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#050e26] text-white transition-opacity duration-700 ease-out" data-purpose="intro-morph-animation" id="introOverlay">
+<!-- Glowing radial electric blue accents -->
+<div class="absolute w-[520px] h-[520px] rounded-full bg-royalBlue/25 blur-[120px] pointer-events-none animate-pulse-glow"></div>
+<div class="absolute w-[320px] h-[320px] rounded-full bg-electricBlue/20 blur-[80px] pointer-events-none"></div>
+<!-- Skip Intro Action Pill -->
+<div class="absolute top-6 right-6 z-20">
+<button class="flex items-center gap-2 px-4 py-1.5 text-xs font-semibold tracking-wider uppercase bg-white/10 hover:bg-white/20 border border-white/15 rounded-full text-slate-300 hover:text-white transition shadow-sm backdrop-blur-md" id="skipIntroBtn">
+<span>Skip Intro</span>
+<kbd class="px-1.5 py-0.5 text-[10px] bg-black/40 rounded border border-white/20 text-slate-400">Esc</kbd>
+</button>
+</div>
+<!-- Central Rapid Icon Cycle Stage -->
+<div class="relative w-56 h-56 flex items-center justify-center" id="introCycleWrapper">
+<!-- Ambient circular halo -->
+<div class="absolute inset-0 rounded-full border border-electricBlue/30 border-dashed animate-spin" style="animation-duration: 12s;"></div>
+<!-- Cycling icon container -->
+<div class="relative z-10 w-24 h-24 flex items-center justify-center" id="cycleBox">
+<!-- Icon 1: Magnifier -->
+<svg class="absolute w-16 h-16 text-electricBlue drop-shadow-[0_0_20px_#2998FF] transition-all duration-200 opacity-100 scale-100" fill="none" id="cycleIcon1" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<circle cx="11" cy="11" r="7"></circle>
+<line stroke-linecap="round" x1="21" x2="16.65" y1="21" y2="16.65"></line>
+</svg>
+<!-- Icon 2: Key -->
+<svg class="absolute w-16 h-16 text-electricBlue drop-shadow-[0_0_20px_#2998FF] transition-all duration-200 opacity-0 scale-75" fill="none" id="cycleIcon2" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<circle cx="8" cy="15" r="5"></circle>
+<path d="M11.5 11.5L21 2M16 7L18.5 9.5M18.5 4.5L21 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<!-- Icon 3: Eye Scanner -->
+<svg class="absolute w-16 h-16 text-electricBlue drop-shadow-[0_0_20px_#2998FF] transition-all duration-200 opacity-0 scale-75" fill="none" id="cycleIcon3" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke-linecap="round" stroke-linejoin="round"></path>
+<circle cx="12" cy="12" r="3.5"></circle>
+</svg>
+<!-- Icon 4: Question Tag -->
+<svg class="absolute w-16 h-16 text-electricBlue drop-shadow-[0_0_20px_#2998FF] transition-all duration-200 opacity-0 scale-75" fill="none" id="cycleIcon4" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="9.5"></circle>
+<path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 1.5-2 2-2 3" stroke-linecap="round"></path>
+<circle cx="12.5" cy="16.5" fill="currentColor" r="0.8"></circle>
+</svg>
+</div>
+</div>
+<!-- Ending State: Two Resolved Co-existing Icons side-by-side ready for coordinate transition -->
+<div class="mt-6 flex items-center justify-center gap-8 opacity-0 pointer-events-none transition-all duration-500 transform translate-y-3" id="resolvedPairContainer">
+<!-- Location Pin element destined for 'O' in LOST -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-14 h-14 rounded-2xl bg-royalBlue/30 border border-electricBlue/60 flex items-center justify-center shadow-[0_0_25px_rgba(41,152,255,0.4)]" id="resolvedPinIcon">
+<svg class="w-8 h-8 text-electricBlue" fill="currentColor" viewbox="0 0 24 24">
+<path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 8 12 8 12s8-6.75 8-12c0-4.42-3.58-8-8-8zm0 11c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"></path>
+</svg>
+</div>
+<span class="text-[10px] tracking-widest text-slate-400 uppercase font-semibold">Location Pin</span>
+</div>
+<!-- Magnifying Glass element destined for 'I' in LINK -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-14 h-14 rounded-2xl bg-royalBlue/30 border border-electricBlue/60 flex items-center justify-center shadow-[0_0_25px_rgba(41,152,255,0.4)]" id="resolvedLensIcon">
+<svg class="w-8 h-8 text-cyan-300" fill="none" stroke="currentColor" stroke-width="2.2" viewbox="0 0 24 24">
+<circle cx="11" cy="11" r="6.5"></circle>
+<line stroke-linecap="round" x1="21" x2="16" y1="21" y2="16"></line>
+</svg>
+</div>
+<span class="text-[10px] tracking-widest text-slate-400 uppercase font-semibold">Magnifier</span>
+</div>
+</div>
+<div class="mt-4 text-xs tracking-widest uppercase text-slate-400 font-medium opacity-80" id="introStatusText">
+    Calibrating Campus Match Vectors...
+  </div>
+</div>
+<!-- END: IntroCinematicOverlay -->
+<!-- Main Page Wrapper with Initial Opacity Stagger -->
+<div class="opacity-95 transition-opacity duration-700" id="mainContent">
+<!-- BEGIN: MainHeader -->
+<header class="relative z-30 w-full border-b border-white/10 bg-midnight/80 backdrop-blur-xl sticky top-0" data-purpose="site-navigation">
+<div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+<!-- Brand Logo Wordmark with dedicated anchor slots -->
+<a aria-label="LostLink Home" class="flex items-center gap-3 group" href="#/">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-deepNavy via-royalBlue to-electricBlue flex items-center justify-center p-0.5 shadow-[0_0_16px_rgba(41,152,255,0.4)] group-hover:shadow-[0_0_24px_rgba(41,152,255,0.7)] transition-shadow">
+<div class="w-full h-full bg-[#050E28] rounded-[10px] flex items-center justify-center">
+<svg class="w-5 h-5 text-electricBlue" fill="currentColor" viewbox="0 0 24 24">
+<path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 8 12 8 12s8-6.75 8-12c0-4.42-3.58-8-8-8zm0 11c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"></path>
+</svg>
+</div>
+</div>
+<div class="flex flex-col">
+<!-- Interactive target wordmark: L[O]ST L[I]NK -->
+<span class="text-2xl font-black tracking-tight uppercase leading-none font-display flex items-center select-none">
+<span>L</span>
+<!-- Dedicated Slot for O (Location Pin) -->
+<span class="inline-flex items-center justify-center w-[1.15ch] h-[1.1em] mx-[0.5px] relative" id="logo-slot-o">
+<svg class="w-full h-full text-electricBlue transition-opacity duration-300" fill="currentColor" id="dockedPinSvg" style="opacity: 0;" viewbox="0 0 24 24">
+<path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 8 12 8 12s8-6.75 8-12c0-4.42-3.58-8-8-8zm0 11c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"></path>
+</svg>
+</span>
+<span>ST</span>
+<span class="ml-1.5">L</span>
+<!-- Dedicated Slot for I (Magnifying Glass) -->
+<span class="inline-flex items-center justify-center w-[0.85ch] h-[1.1em] mx-[0.5px] relative" id="logo-slot-i">
+<svg class="w-full h-full text-electricBlue transition-opacity duration-300" fill="none" id="dockedLensSvg" stroke="currentColor" stroke-width="2.4" style="opacity: 0;" viewbox="0 0 24 24">
+<circle cx="12" cy="7" r="5"></circle>
+<line stroke-linecap="round" x1="12" x2="12" y1="12" y2="22"></line>
+</svg>
+</span>
+<span>NK</span>
+</span>
+<span class="text-[9px] font-semibold tracking-widest text-slate-400 uppercase mt-0.5">
+          Smart Lost &amp; Found System
+        </span>
+</div>
+</a>
+<!-- Primary Desktop Links -->
+<nav aria-label="Main Navigation" class="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-300">
+<a class="text-white hover:text-electricBlue transition" href="#/">Home</a>
+<a class="hover:text-electricBlue transition" href="#/explore">Explore Items</a>
+<a class="hover:text-electricBlue transition" href="#how-it-works">How It Works</a>
+<a class="hover:text-electricBlue transition" href="#trust-safety">Safety &amp; Verification</a>
+<a class="hover:text-electricBlue transition" href="#contact">Help &amp; Dispatch</a>
+</nav>
+<!-- Account Actions -->
+<div class="flex items-center space-x-4">
+<a class="text-sm font-medium text-slate-300 hover:text-white px-3 py-2 transition" href="#/login">
+        Sign In
+      </a>
+<a class="relative group overflow-hidden rounded-full p-[1px] focus:outline-none focus:ring-2 focus:ring-electricBlue focus:ring-offset-2 focus:ring-offset-midnight" href="#/register">
+<span class="absolute inset-0 bg-gradient-to-r from-royalBlue to-electricBlue group-hover:from-electricBlue group-hover:to-royalBlue transition-all"></span>
+<span class="relative block px-6 py-2.5 rounded-full bg-deepNavy group-hover:bg-opacity-80 text-white text-sm font-semibold tracking-wide transition">
+          Get Started
+        </span>
+</a>
+</div>
+</div>
+</header>
+<!-- END: MainHeader -->
+<!-- BEGIN: HeroSection -->
+<section class="relative min-h-[860px] radial-hero-bg overflow-hidden flex flex-col justify-between pt-12 pb-16" data-purpose="hero-viewport" id="hero">
+<!-- Ambient light reflections for lens caustics -->
+<div class="absolute top-1/4 right-1/4 w-[600px] h-[600px] rounded-full bg-royalBlue/20 blur-[140px] pointer-events-none -z-0"></div>
+<div class="absolute -top-20 -left-20 w-[450px] h-[450px] rounded-full bg-electricBlue/15 blur-[120px] pointer-events-none -z-0"></div>
+<div class="max-w-7xl mx-auto px-6 w-full relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mt-4">
+<!-- Hero Left: Typography and Action Buttons -->
+<div class="lg:col-span-6 flex flex-col justify-center space-y-7 pr-0 lg:pr-4" data-purpose="hero-copy">
+<!-- Live Campus Network Status Badge -->
+<div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-deepNavy/80 border border-surfaceBorder text-xs text-slate-300 max-w-fit shadow-inner">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+<span class="font-medium text-slate-200">Active Campus Network: <span class="text-white font-semibold">Live Community Match Engine</span></span>
+</div>
+<!-- Headline -->
+<div class="space-y-1">
+<h1 class="text-5xl sm:text-6xl xl:text-7xl font-black tracking-tight text-white uppercase font-display leading-[1.02]">
+          Don't Panic.
+        </h1>
+<h1 class="text-5xl sm:text-6xl xl:text-7xl font-black tracking-tight bg-gradient-to-r from-electricBlue via-sky-300 to-white bg-clip-text text-transparent uppercase font-display leading-[1.02]">
+          We'll Find It.
+        </h1>
+</div>
+<!-- Descriptive Lead Copy -->
+<p class="text-lg sm:text-xl text-slate-300 leading-relaxed max-w-xl font-normal">
+        The smart lost &amp; found network for university campus communities. Catalog missing items with guided photo intake, match through visual attribute analysis, and coordinate verified safe retrieval.
+      </p>
+<!-- CTA Button Group -->
+<div class="flex flex-wrap items-center gap-4 pt-2">
+<!-- Primary CTA -->
+<a class="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-gradient-to-r from-royalBlue to-blue-600 hover:from-blue-600 hover:to-electricBlue text-white font-bold tracking-wide text-base shadow-[0_10px_30px_rgba(18,102,232,0.45)] hover:shadow-[0_12px_40px_rgba(41,152,255,0.6)] hover:-translate-y-0.5 transition duration-300 group" href="#/report/lost">
+<span>I Lost Something</span>
+<svg class="w-5 h-5 group-hover:translate-x-1.5 transition-transform" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24">
+<path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</a>
+<!-- Secondary Ghost CTA -->
+<a class="inline-flex items-center justify-center gap-2 px-7 py-4 rounded-full bg-white/5 hover:bg-white/10 text-white font-semibold text-base border border-slate-700/60 hover:border-electricBlue/50 transition duration-300" href="#/report/found">
+<span>I Found Something</span>
+<span class="text-electricBlue">→</span>
+</a>
+</div>
+<!-- Feature verification pills under CTAs -->
+<div class="flex items-center gap-6 pt-4 text-xs text-slate-400 border-t border-white/10 max-w-md">
+<div class="flex items-center gap-2">
+<svg class="w-4 h-4 text-electricBlue" fill="currentColor" viewbox="0 0 20 20"><path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path></svg>
+<span>Visual Attribute Matching</span>
+</div>
+<div class="flex items-center gap-2">
+<svg class="w-4 h-4 text-electricBlue" fill="currentColor" viewbox="0 0 20 20"><path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path></svg>
+<span>Private Verification</span>
+</div>
+<div class="flex items-center gap-2">
+<svg class="w-4 h-4 text-electricBlue" fill="currentColor" viewbox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"></path></svg>
+<span>Campus Desks &amp; Handover</span>
+</div>
+</div>
+</div>
+<!-- Hero Right: Interactive 3D Magnifying Glass with Smooth Lerp Mouse Parallax -->
+<div class="lg:col-span-6 relative flex items-center justify-center py-6" data-purpose="interactive-3d-magnifier" id="lensContainer">
+<!-- Ambient back-lighting glow behind lens -->
+<div class="absolute w-[420px] h-[420px] rounded-full bg-electricBlue/25 blur-3xl pointer-events-none -z-0"></div>
+<!-- 3D Parallax Wrapper -->
+<div class="relative z-10 w-full max-w-[540px] aspect-square flex items-center justify-center transition-transform ease-out duration-150 animate-float-slow" id="lensParallaxWrapper">
+<!-- 3D Magnifying Glass Image -->
+<img alt="Photorealistic 3D render of an oversized luxury magnifying glass floating on dark navy background" class="w-full h-full object-contain filter drop-shadow-[0_30px_50px_rgba(5,13,36,0.9)] select-none pointer-events-none" id="lensImage" loading="eager" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7qpApZgelF39QnMe8_D7RWJAt0_MsR_S_wDNmhLKcLhnpWHtb-hvHhbkyKUAqAdA_Wd6pAhSAqb7leDghdhSruod0w2xj6MCAy7aGMmrsLeJTc0bykrP-Fdvo0A73vSfwF6_ZlF6xCi3NXzZNzjWPpgOUEagIEb5rER_TdsNwhxXCOwiOMg6Wj7r8juJOSjpbPLDV10yH3vc9vi9eQchC4P67nFRwkVlpi7rB9yDgg05-LtCYFtW2"/>
+<!-- Optical Specular Reflection Overlay Simulation within Lens Center -->
+<div class="absolute top-[28%] left-[48%] -translate-x-1/2 -translate-y-1/2 w-48 h-48 rounded-full pointer-events-none mix-blend-screen opacity-70 bg-gradient-to-tr from-transparent via-electricBlue/30 to-white/20 blur-sm transition-transform duration-200" id="lensReflection"></div>
+<!-- Interactive Optical Target Reticle hovering near glass -->
+<div class="absolute top-10 right-8 bg-deepNavy/90 border border-electricBlue/40 text-slate-200 px-3.5 py-1.5 rounded-full text-xs font-medium backdrop-blur-md shadow-lg flex items-center gap-2 pointer-events-none">
+<span class="w-2 h-2 rounded-full bg-electricBlue animate-ping"></span>
+<span>Optical Lens Focus: Active</span>
+</div>
+</div>
+</div>
+</div>
+<!-- BEGIN: HeroBottomCards -->
+<div class="max-w-7xl mx-auto px-6 w-full mt-12 relative z-20" data-purpose="hero-feature-cards">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Card 1: Report Lost -->
+<a class="glass-card glass-card-hover rounded-2xl p-6 flex items-center justify-between group cursor-pointer block" data-purpose="report-lost-card" href="#/report/lost">
+<div class="space-y-1.5">
+<span class="text-xs uppercase tracking-wider text-slate-400 font-semibold">Immediate Intake</span>
+<h3 class="text-2xl font-bold text-white group-hover:text-electricBlue transition">Report Lost</h3>
+<p class="text-xs text-slate-300">File a timestamped lost report with photo and building location.</p>
+</div>
+<div class="w-16 h-16 rounded-xl bg-midnight/90 border border-white/10 flex items-center justify-center p-3 text-electricBlue group-hover:scale-105 transition-transform flex-shrink-0 shadow-inner">
+<svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</a>
+<!-- Card 2: Report Found -->
+<a class="glass-card glass-card-hover rounded-2xl p-6 flex items-center justify-between group cursor-pointer block" data-purpose="report-found-card" href="#/report/found">
+<div class="space-y-1.5">
+<span class="text-xs uppercase tracking-wider text-slate-400 font-semibold">Safe Handover</span>
+<h3 class="text-2xl font-bold text-white group-hover:text-electricBlue transition">Report Found</h3>
+<p class="text-xs text-slate-300">Take a photo to log found property and set designated desk drop.</p>
+</div>
+<div class="w-16 h-16 rounded-xl bg-midnight/90 border border-white/10 flex items-center justify-center p-3 text-emerald-400 group-hover:scale-105 transition-transform flex-shrink-0 shadow-inner">
+<svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</a>
+<!-- Card 3: Explore Matches -->
+<a class="relative overflow-hidden rounded-2xl p-6 flex items-center justify-between group cursor-pointer bg-gradient-to-br from-royalBlue via-blue-600 to-deepNavy border border-electricBlue shadow-[0_12px_30px_rgba(18,102,232,0.4)] hover:shadow-[0_18px_40px_rgba(41,152,255,0.6)] transition-all duration-300 hover:-translate-y-1 block" data-purpose="explore-matches-card" href="#/explore">
+<div class="absolute -right-6 -bottom-6 w-36 h-36 rounded-full bg-white/10 blur-xl pointer-events-none"></div>
+<div class="space-y-1.5 relative z-10">
+<span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-white text-royalBlue uppercase tracking-wide">
+            Live Catalog Directory
+          </span>
+<h3 class="text-2xl font-extrabold text-white">Explore Matches</h3>
+<p class="text-xs text-blue-100">Browse verified listings across campus academic and student centers.</p>
+</div>
+<div class="w-16 h-16 rounded-xl bg-white/15 border border-white/25 flex items-center justify-center p-3 text-white group-hover:scale-110 transition-transform flex-shrink-0 relative z-10 shadow-lg">
+<svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</a>
+</div>
+</div>
+<!-- END: HeroBottomCards -->
+</section>
+<!-- END: HeroSection -->
+<!-- BEGIN: HowItWorksSection -->
+<section class="py-24 bg-midnight relative border-t border-white/5" data-purpose="custody-workflow" id="how-it-works">
+<div class="max-w-7xl mx-auto px-6">
+<div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
+<span class="text-xs font-bold tracking-widest text-electricBlue uppercase">Campus Community Protocol</span>
+<h2 class="text-3xl sm:text-4xl font-extrabold text-white font-display">
+        How It Works: 4-Step Verified Custody
+      </h2>
+<p class="text-slate-300 text-base">
+        LostLink provides a simple, structured process to reunite students with their belongings without exposing private details or causing awkward meetups.
+      </p>
+</div>
+<!-- 4 Columns Process Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+<!-- Step 1 -->
+<div class="glass-card rounded-2xl p-6 relative flex flex-col justify-between">
+<div>
+<div class="w-12 h-12 rounded-xl bg-royalBlue/20 border border-electricBlue/40 text-electricBlue flex items-center justify-center font-black text-xl mb-4">
+            01
+          </div>
+<h3 class="text-lg font-bold text-white mb-2">Digital Intake</h3>
+<p class="text-slate-300 text-sm leading-relaxed">
+            Submit a lost report or upload photos of found property with building location tags and timestamp info.
+          </p>
+</div>
+<div class="mt-6 pt-4 border-t border-white/10 text-xs text-slate-400">
+          ✓ Structured Campus Intake
+        </div>
+</div>
+<!-- Step 2 -->
+<div class="glass-card rounded-2xl p-6 relative flex flex-col justify-between">
+<div>
+<div class="w-12 h-12 rounded-xl bg-royalBlue/20 border border-electricBlue/40 text-electricBlue flex items-center justify-center font-black text-xl mb-4">
+            02
+          </div>
+<h3 class="text-lg font-bold text-white mb-2">Visual &amp; Attribute Matching</h3>
+<p class="text-slate-300 text-sm leading-relaxed">
+            Automated image attributes, category metadata, and location proximity generate suggested matches for review.
+          </p>
+</div>
+<div class="mt-6 pt-4 border-t border-white/10 text-xs text-slate-400">
+          ✓ Proximity &amp; Visual Correlation
+        </div>
+</div>
+<!-- Step 3 -->
+<div class="glass-card rounded-2xl p-6 relative flex flex-col justify-between">
+<div>
+<div class="w-12 h-12 rounded-xl bg-royalBlue/20 border border-electricBlue/40 text-electricBlue flex items-center justify-center font-black text-xl mb-4">
+            03
+          </div>
+<h3 class="text-lg font-bold text-white mb-2">Ownership Challenge</h3>
+<p class="text-slate-300 text-sm leading-relaxed">
+            Claimants answer private challenge questions (lockscreen background, unique scratches, or engravings) to confirm true ownership.
+          </p>
+</div>
+<div class="mt-6 pt-4 border-t border-white/10 text-xs text-slate-400">
+          ✓ Private Ownership Verification
+        </div>
+</div>
+<!-- Step 4 -->
+<div class="glass-card rounded-2xl p-6 relative flex flex-col justify-between">
+<div>
+<div class="w-12 h-12 rounded-xl bg-royalBlue/20 border border-electricBlue/40 text-electricBlue flex items-center justify-center font-black text-xl mb-4">
+            04
+          </div>
+<h3 class="text-lg font-bold text-white mb-2">Safe Campus Handover</h3>
+<p class="text-slate-300 text-sm leading-relaxed">
+            Coordinate secure pickup at designated university service desks, library help points, or residential front offices.
+          </p>
+</div>
+<div class="mt-6 pt-4 border-t border-white/10 text-xs text-slate-400">
+          ✓ Verified Desk Handover
+        </div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: HowItWorksSection -->
+<!-- BEGIN: SafetyAndVerificationSection -->
+<section class="py-20 bg-deepNavy/40 border-t border-b border-surfaceBorder/40" data-purpose="security-and-trust" id="trust-safety">
+<div class="max-w-7xl mx-auto px-6">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+<div class="lg:col-span-5 space-y-6">
+<span class="px-3 py-1 text-xs font-bold rounded-full bg-electricBlue/10 border border-electricBlue/30 text-electricBlue uppercase tracking-wider">
+          Safety &amp; Verification
+        </span>
+<h2 class="text-3xl sm:text-4xl font-black text-white font-display leading-tight">
+          Purpose-Built for University Campus Communities.
+        </h2>
+<p class="text-slate-300 text-base leading-relaxed">
+          LostLink organizes lost and found recovery through structured campus reporting, minimizing friction between students and campus front desks.
+        </p>
+<ul class="space-y-3.5 text-sm text-slate-300">
+<li class="flex items-start gap-3">
+<svg class="w-5 h-5 text-electricBlue flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span><strong>Guided Multi-Step Reporting:</strong> High-resolution photo upload, exact timestamp recording, and hall selection.</span>
+</li>
+<li class="flex items-start gap-3">
+<svg class="w-5 h-5 text-electricBlue flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span><strong>Visual Attribute Correlation:</strong> Filters by brand, category, physical markings, and color tags.</span>
+</li>
+<li class="flex items-start gap-3">
+<svg class="w-5 h-5 text-electricBlue flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span><strong>Challenge Verification:</strong> Protects property by requiring accurate verification before contact information is shared.</span>
+</li>
+</ul>
+</div>
+<div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="glass-card rounded-2xl p-5 border-l-4 border-l-electricBlue">
+<div class="text-xs text-slate-400 uppercase tracking-wider mb-1">Campus Coverage</div>
+<div class="text-2xl font-extrabold text-white">Full University Footprint</div>
+<div class="text-xs text-slate-300 mt-2">Connecting libraries, classrooms, gyms, and dining centers</div>
+</div>
+<div class="glass-card rounded-2xl p-5 border-l-4 border-l-royalBlue">
+<div class="text-xs text-slate-400 uppercase tracking-wider mb-1">Privacy-First Architecture</div>
+<div class="text-2xl font-extrabold text-white">Private Challenge Questions</div>
+<div class="text-xs text-electricBlue mt-2">Only confirmed owners unlock collection details</div>
+</div>
+<div class="glass-card rounded-2xl p-5 border-l-4 border-l-sky-400">
+<div class="text-xs text-slate-400 uppercase tracking-wider mb-1">Transparent Intake</div>
+<div class="text-2xl font-extrabold text-white">Timestamped Audits</div>
+<div class="text-xs text-slate-300 mt-2">Every submission receives an immutable reference ID</div>
+</div>
+<div class="glass-card rounded-2xl p-5 border-l-4 border-l-blue-400">
+<div class="text-xs text-slate-400 uppercase tracking-wider mb-1">Authorized Desk Pickup</div>
+<div class="text-2xl font-extrabold text-white">Designated Hubs</div>
+<div class="text-xs text-slate-300 mt-2">Handover at verified residential and library staff desks</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: SafetyAndVerificationSection -->
+<!-- BEGIN: BottomCTABanner -->
+<section class="py-20 bg-midnight relative overflow-hidden" data-purpose="closing-cta">
+<div class="max-w-7xl mx-auto px-6 relative z-10">
+<div class="rounded-3xl bg-gradient-to-r from-deepNavy via-royalBlue/80 to-midnight p-10 md:p-14 border border-surfaceBorder relative overflow-hidden text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl">
+<div class="max-w-2xl space-y-3">
+<h2 class="text-3xl sm:text-4xl font-black text-white font-display">
+          Lost something on campus? Start your search in seconds.
+        </h2>
+<p class="text-blue-100 text-base">
+          Submit details in under two minutes or browse current community reports to reclaim your items.
+        </p>
+</div>
+<div class="flex flex-col sm:flex-row items-center gap-4 flex-shrink-0">
+<a class="w-full sm:w-auto px-8 py-4 rounded-full bg-white text-deepNavy hover:bg-slate-100 font-extrabold text-sm tracking-wide transition shadow-lg text-center" href="#/report/lost">
+          Report Lost Item
+        </a>
+<a class="w-full sm:w-auto px-8 py-4 rounded-full bg-midnight/70 hover:bg-midnight text-white border border-white/20 font-bold text-sm tracking-wide transition text-center" href="#/explore">
+          Browse Live Directory
+        </a>
+</div>
+</div>
+</div>
+</section>
+<!-- END: BottomCTABanner -->
+<!-- BEGIN: InstitutionalFooter -->
+<footer class="bg-[#030818] border-t border-white/10 text-slate-400 text-xs py-14" data-purpose="site-footer" id="contact">
+<div class="max-w-7xl mx-auto px-6">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+<!-- Brand Info -->
+<div class="space-y-4">
+<div class="flex items-center gap-2">
+<span class="text-xl font-black text-white tracking-tight uppercase">LOST<span class="text-electricBlue">LINK</span></span>
+</div>
+<p class="text-slate-400 leading-relaxed">
+          Smart campus lost and found platform for academic institutions, libraries, and student unions.
+        </p>
+<div class="text-slate-400">
+          Campus Help Desk: <br/>
+<a class="text-white hover:text-electricBlue font-bold text-sm" href="tel:6507239633">(650) 723-9633</a>
+</div>
+</div>
+<!-- Campus Portals -->
+<div class="space-y-3">
+<div class="font-bold text-white uppercase tracking-wider text-xs">Campus Zones</div>
+<ul class="space-y-2">
+<li><a class="hover:text-white transition" href="#/explore">Undergraduate Housing Desks</a></li>
+<li><a class="hover:text-white transition" href="#/explore">Graduate Student Center</a></li>
+<li><a class="hover:text-white transition" href="#/explore">University Libraries</a></li>
+<li><a class="hover:text-white transition" href="#/explore">Athletic Complex &amp; Gyms</a></li>
+<li><a class="hover:text-white transition" href="#/explore">Campus Shuttles &amp; Transit</a></li>
+</ul>
+</div>
+<!-- Governance -->
+<div class="space-y-3">
+<div class="font-bold text-white uppercase tracking-wider text-xs">Policy &amp; Guidelines</div>
+<ul class="space-y-2">
+<li><a class="hover:text-white transition" href="#trust-safety">Campus Property Escrow Guidelines</a></li>
+<li><a class="hover:text-white transition" href="#trust-safety">Challenge Verification Standard</a></li>
+<li><a class="hover:text-white transition" href="#trust-safety">Student Privacy Protections</a></li>
+<li><a class="hover:text-white transition" href="#trust-safety">Lost Property Retention Terms</a></li>
+</ul>
+</div>
+<!-- Service Hours -->
+<div class="space-y-3">
+<div class="font-bold text-white uppercase tracking-wider text-xs">Operations</div>
+<p class="leading-relaxed">
+          Main Intake: Student Services Building, Desk 102<br/>
+          Desk Hours: Mon-Fri 08:00 - 20:00<br/>
+          Online Matching: Available 24/7.
+        </p>
+<div class="pt-2">
+<span class="inline-flex items-center gap-1.5 text-[11px] text-emerald-400">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            Campus Directory Active
+          </span>
+</div>
+</div>
+</div>
+<!-- Copyright -->
+<div class="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px]">
+<div>
+        © 2026 LostLink Systems. Smart Campus Lost &amp; Found.
+      </div>
+<div class="flex items-center space-x-6">
+<a class="hover:text-white transition" href="#trust-safety">Privacy Notice</a>
+<a class="hover:text-white transition" href="#trust-safety">Terms of Use</a>
+<a class="hover:text-white transition" href="#trust-safety">Accessibility</a>
+</div>
+</div>
+</div>
+</footer>
+<!-- END: InstitutionalFooter -->
+</div>
+<!-- END: mainContent -->
+<!-- JAVASCRIPT: Dynamic Coordinate Docking & Smooth Lerp Parallax -->
+<script data-purpose="intro-true-morph-docking">
+  document.addEventListener('DOMContentLoaded', () => {
+    const overlay = document.getElementById('introOverlay');
+    const skipBtn = document.getElementById('skipIntroBtn');
+    const statusText = document.getElementById('introStatusText');
+    const resolvedContainer = document.getElementById('resolvedPairContainer');
+    const resolvedPin = document.getElementById('resolvedPinIcon');
+    const resolvedLens = document.getElementById('resolvedLensIcon');
+
+    const targetSlotO = document.getElementById('logo-slot-o');
+    const targetSlotI = document.getElementById('logo-slot-i');
+    const dockedPinSvg = document.getElementById('dockedPinSvg');
+    const dockedLensSvg = document.getElementById('dockedLensSvg');
+
+    const cycleIcons = [
+      document.getElementById('cycleIcon1'),
+      document.getElementById('cycleIcon2'),
+      document.getElementById('cycleIcon3'),
+      document.getElementById('cycleIcon4')
+    ];
+
+    let cycleIndex = 0;
+    let cycleInterval = null;
+    let sequenceFinished = false;
+
+    // Fast cycling animation between the 4 icons
+    cycleInterval = setInterval(() => {
+      if (sequenceFinished) return;
+      cycleIcons[cycleIndex].classList.remove('opacity-100', 'scale-100');
+      cycleIcons[cycleIndex].classList.add('opacity-0', 'scale-75');
+
+      cycleIndex = (cycleIndex + 1) % cycleIcons.length;
+
+      cycleIcons[cycleIndex].classList.remove('opacity-0', 'scale-75');
+      cycleIcons[cycleIndex].classList.add('opacity-100', 'scale-100');
+    }, 170);
+
+    function startTrueCoordinateFlight() {
+      if (sequenceFinished) return;
+      sequenceFinished = true;
+      clearInterval(cycleInterval);
+
+      // Hide central cycle box
+      const cycleWrapper = document.getElementById('introCycleWrapper');
+      if (cycleWrapper) cycleWrapper.style.display = 'none';
+
+      // Show resolved side-by-side icons briefly
+      resolvedContainer.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-3');
+      resolvedContainer.classList.add('opacity-100', 'translate-y-0');
+      statusText.innerText = "Aligning Core Brand Anchors...";
+
+      // Measure exact initial and destination bounding boxes
+      setTimeout(() => {
+        executeCoordinateFlight();
+      }, 420);
+    }
+
+    function executeCoordinateFlight() {
+      const pinRect = resolvedPin.getBoundingClientRect();
+      const lensRect = resolvedLens.getBoundingClientRect();
+
+      const slotORect = targetSlotO.getBoundingClientRect();
+      const slotIRect = targetSlotI.getBoundingClientRect();
+
+      // Create Pin Flying Clone
+      const pinClone = document.createElement('div');
+      pinClone.className = 'morph-flying-clone';
+      pinClone.style.left = `${pinRect.left}px`;
+      pinClone.style.top = `${pinRect.top}px`;
+      pinClone.style.width = `${pinRect.width}px`;
+      pinClone.style.height = `${pinRect.height}px`;
+      pinClone.innerHTML = `
+        <div class="w-full h-full rounded-2xl bg-royalBlue/40 border border-electricBlue flex items-center justify-center shadow-[0_0_30px_#2998FF]">
+          <svg class="w-8 h-8 text-electricBlue" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 8 12 8 12s8-6.75 8-12c0-4.42-3.58-8-8-8zm0 11c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"></path>
+          </svg>
+        </div>
+      `;
+      document.body.appendChild(pinClone);
+
+      // Create Lens Flying Clone
+      const lensClone = document.createElement('div');
+      lensClone.className = 'morph-flying-clone';
+      lensClone.style.left = `${lensRect.left}px`;
+      lensClone.style.top = `${lensRect.top}px`;
+      lensClone.style.width = `${lensRect.width}px`;
+      lensClone.style.height = `${lensRect.height}px`;
+      lensClone.innerHTML = `
+        <div class="w-full h-full rounded-2xl bg-royalBlue/40 border border-electricBlue flex items-center justify-center shadow-[0_0_30px_#2998FF]">
+          <svg class="w-8 h-8 text-cyan-300" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="6.5"></circle>
+            <line stroke-linecap="round" x1="21" x2="16" y1="21" y2="16"></line>
+          </svg>
+        </div>
+      `;
+      document.body.appendChild(lensClone);
+
+      // Hide resolved source wrappers
+      resolvedContainer.style.opacity = '0';
+      statusText.style.opacity = '0';
+
+      // Force layout flush then animate transforms
+      pinClone.getBoundingClientRect();
+      lensClone.getBoundingClientRect();
+
+      const deltaPinX = (slotORect.left + slotORect.width / 2) - (pinRect.left + pinRect.width / 2);
+      const deltaPinY = (slotORect.top + slotORect.height / 2) - (pinRect.top + pinRect.height / 2);
+      const scalePin = slotORect.height / pinRect.height;
+
+      const deltaLensX = (slotIRect.left + slotIRect.width / 2) - (lensRect.left + lensRect.width / 2);
+      const deltaLensY = (slotIRect.top + slotIRect.height / 2) - (lensRect.top + lensRect.height / 2);
+      const scaleLens = slotIRect.height / lensRect.height;
+
+      // Animate Pin to Slot 'O'
+      pinClone.style.transform = `translate(${deltaPinX}px, ${deltaPinY}px) scale(${scalePin})`;
+      
+      // Animate Lens to Slot 'I' with upright rotation
+      lensClone.style.transform = `translate(${deltaLensX}px, ${deltaLensY}px) scale(${scaleLens}) rotate(45deg)`;
+
+      // Begin background overlay fadeout simultaneously
+      overlay.style.transition = 'opacity 0.65s cubic-bezier(0.4, 0, 0.2, 1)';
+      overlay.style.opacity = '0';
+
+      // Seamless lock into the brand wordmark
+      setTimeout(() => {
+        dockedPinSvg.style.opacity = '1';
+        dockedLensSvg.style.opacity = '1';
+        
+        // Remove flying clones
+        pinClone.remove();
+        lensClone.remove();
+        overlay.style.display = 'none';
+      }, 620);
+    }
+
+    function completeInstantly() {
+      if (sequenceFinished) return;
+      sequenceFinished = true;
+      clearInterval(cycleInterval);
+      dockedPinSvg.style.opacity = '1';
+      dockedLensSvg.style.opacity = '1';
+      overlay.style.display = 'none';
+    }
+
+    // Prefers-reduced-motion check
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      completeInstantly();
+      return;
+    }
+
+    // Natural sequence timeline: Cycle ~1.3s -> Resolve -> Fly -> Dock (~2s total)
+    setTimeout(startTrueCoordinateFlight, 1200);
+
+    // Skip handlers
+    skipBtn.addEventListener('click', completeInstantly);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') completeInstantly();
+    });
+  });
+</script>
+<script data-purpose="lerped-3d-magnifier-parallax">
+  // Smooth damped Lerp Parallax for the 3D Magnifying Glass
+  (function initLensParallax() {
+    const lensWrapper = document.getElementById('lensParallaxWrapper');
+    const lensReflection = document.getElementById('lensReflection');
+
+    if (!lensWrapper) return;
+
+    // Check for pointer precision support
+    const isTouch = window.matchMedia('(hover: none)').matches;
+    if (isTouch) {
+      // Keep static CSS float on touch devices
+      return;
+    }
+
+    let targetRotX = 0;
+    let targetRotY = 0;
+    let targetTransX = 0;
+    let targetTransY = 0;
+
+    let currentRotX = 0;
+    let currentRotY = 0;
+    let currentTransX = 0;
+    let currentTransY = 0;
+
+    const lerpFactor = 0.08;
+
+    window.addEventListener('mousemove', (e) => {
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+      const normX = (e.clientX - centerX) / centerX;
+      const normY = (e.clientY - centerY) / centerY;
+
+      // Restrained pitch & yaw (max 8-10 degrees) and subtle translate (12-16px)
+      targetRotX = -normY * 8;
+      targetRotY = normX * 10;
+      targetTransX = normX * 14;
+      targetTransY = normY * 12;
+    });
+
+    window.addEventListener('mouseleave', () => {
+      targetRotX = 0;
+      targetRotY = 0;
+      targetTransX = 0;
+      targetTransY = 0;
+    });
+
+    function renderLoop() {
+      // Linear interpolation (damping)
+      currentRotX += (targetRotX - currentRotX) * lerpFactor;
+      currentRotY += (targetRotY - currentRotY) * lerpFactor;
+      currentTransX += (targetTransX - currentTransX) * lerpFactor;
+      currentTransY += (targetTransY - currentTransY) * lerpFactor;
+
+      lensWrapper.style.transform = `perspective(1000px) rotateX(${currentRotX.toFixed(2)}deg) rotateY(${currentRotY.toFixed(2)}deg) translate3d(${currentTransX.toFixed(2)}px, ${currentTransY.toFixed(2)}px, 0)`;
+
+      if (lensReflection) {
+        lensReflection.style.transform = `translate(${-currentTransX * 0.6}px, ${-currentTransY * 0.6}px)`;
+      }
+
+      requestAnimationFrame(renderLoop);
+    }
+
+    requestAnimationFrame(renderLoop);
+  })();
+</script>
+</body></html>

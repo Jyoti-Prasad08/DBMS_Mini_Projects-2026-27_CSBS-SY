@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" class="intro-done">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Claims — LostLink</title>
+  <meta name="description" content="Track ownership claims and verification for your LostLink reports.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body class="app-page" data-require-auth="true">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <svg class="icon-defs" aria-hidden="true" focusable="false">
+    <symbol id="icon-pin-filled" viewBox="0 0 24 24">
+      <path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 8 12 8 12s8-6.75 8-12c0-4.42-3.58-8-8-8Zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="icon-lens-i" viewBox="0 0 24 24">
+      <circle cx="12" cy="7.4" r="6.2"/>
+      <path d="M12 13.6V22"/>
+    </symbol>
+    <symbol id="icon-arrow" viewBox="0 0 24 24">
+      <path d="M5 12h14"/>
+      <path d="m13 6 6 6-6 6"/>
+    </symbol>
+    <symbol id="icon-back" viewBox="0 0 24 24">
+      <path d="M19 12H5"/>
+      <path d="m11 18-6-6 6-6"/>
+    </symbol>
+  </svg>
+
+  <header class="site-header">
+    <div class="container header__inner">
+      <a class="brand" href="index.html" aria-label="LostLink home">
+        <span class="brand__word" aria-hidden="true">
+          <span>L</span><span class="brand__slot brand__slot--o"><svg viewBox="0 0 24 24"><use href="#icon-pin-filled"></use></svg></span><span>ST</span><span class="brand__space"></span><span>L</span><span class="brand__slot brand__slot--i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><use href="#icon-lens-i"></use></svg></span><span>NK</span>
+        </span>
+        <span class="brand__tagline">Campus Lost &amp; Found</span>
+      </a>
+
+      <nav class="header__nav" aria-label="Main navigation">
+        <a href="index.html">Home</a>
+        <a href="explore.html">Explore Items</a>
+        <a href="index.html#how-it-works">How It Works</a>
+      </nav>
+
+      <div class="header__actions">
+        <a class="header__signin" data-auth="guest" href="login.html">Sign In</a>
+        <a class="button button--small button--primary" data-auth="guest" href="register.html">Get Started</a>
+        <a class="header__signin" data-auth="user" href="dashboard.html" hidden>Dashboard</a>
+        <button class="button button--small button--secondary" type="button" data-logout data-auth="user" hidden>Log Out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-main" id="main">
+    <div class="container app-container">
+      <div class="page-topbar">
+        <a class="back-home" href="index.html" aria-label="Back to Home" title="Back to Home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#icon-back"></use></svg>
+        </a>
+      </div>
+
+      <div class="app-heading workspace-heading">
+        <span class="eyebrow">Ownership verification</span>
+        <h1>Claims</h1>
+        <p>Track claim requests and review the private evidence submitted for your found items.</p>
+      </div>
+
+      <nav class="workspace-nav" aria-label="Workspace">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="my-reports.html">My Reports</a>
+        <a href="matches.html">Potential Matches</a>
+        <a href="claims.html" aria-current="page">Claims</a>
+      </nav>
+
+      <p class="workspace-note">Private identifying details are visible only to the claimant and the finder. A high match score never approves a claim automatically.</p>
+
+      <div class="form-message" id="claimsMessage" role="status" aria-live="polite" hidden></div>
+      <p class="loading-note" id="claimsLoading">Loading claims…</p>
+      <div class="form-message is-error" id="claimsError" role="alert" hidden></div>
+
+      <div class="claim-list" id="claimList"></div>
+
+      <div class="empty-state" id="claimsEmpty" hidden>
+        <h2>No claims yet</h2>
+        <p>When you request a claim from a potential match, or someone claims one of your found items, it will appear here.</p>
+        <div class="empty-state__actions">
+          <a class="button button--primary" href="matches.html">View potential matches</a>
+          <a class="button button--secondary" href="my-reports.html">Go to My Reports</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    <div class="container app-footer__inner">
+      <span>© 2026 LostLink. Built for campus communities.</span>
+      <nav aria-label="Footer navigation">
+        <a href="index.html">Home</a>
+        <a href="explore.html">Explore Items</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="app-utils.js" defer></script>
+  <script src="auth-nav.js" defer></script>
+  <script src="claims.js" defer></script>
+</body>
+</html>
