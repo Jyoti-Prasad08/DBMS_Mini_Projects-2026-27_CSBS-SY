@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en" class="intro-done">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign In — LostLink</title>
+  <meta name="description" content="Sign in to LostLink to manage your lost and found reports, matches, and claims.">
+  <script>
+    (function () {
+      var path = window.location.pathname.toLowerCase();
+      var wantsRegister = /\/register(?:\.html)?$/.test(path)
+        || new URLSearchParams(window.location.search).get('mode') === 'register';
+      var mode = wantsRegister ? 'register' : 'login';
+      document.documentElement.setAttribute('data-auth-mode', mode);
+      if (mode === 'register') document.title = 'Create Account — LostLink';
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body class="app-page" data-guest-only="true">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <svg class="icon-defs" aria-hidden="true" focusable="false">
+    <symbol id="icon-pin-filled" viewBox="0 0 24 24">
+      <path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 8 12 8 12s8-6.75 8-12c0-4.42-3.58-8-8-8Zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="icon-lens-i" viewBox="0 0 24 24">
+      <circle cx="12" cy="7.4" r="6.2"/>
+      <path d="M12 13.6V22"/>
+    </symbol>
+    <symbol id="icon-arrow" viewBox="0 0 24 24">
+      <path d="M5 12h14"/>
+      <path d="m13 6 6 6-6 6"/>
+    </symbol>
+    <symbol id="icon-back" viewBox="0 0 24 24">
+      <path d="M19 12H5"/>
+      <path d="m11 18-6-6 6-6"/>
+    </symbol>
+    <symbol id="icon-lock" viewBox="0 0 24 24">
+      <rect x="5" y="10" width="14" height="10" rx="2"/>
+      <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+    </symbol>
+    <symbol id="icon-user" viewBox="0 0 24 24">
+      <circle cx="12" cy="8" r="3.4"/>
+      <path d="M5 20a7 7 0 0 1 14 0"/>
+    </symbol>
+    <symbol id="icon-mail" viewBox="0 0 24 24">
+      <rect x="3" y="5" width="18" height="14" rx="2"/>
+      <path d="m4 7 8 6 8-6"/>
+    </symbol>
+    <symbol id="icon-eye" viewBox="0 0 24 24">
+      <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6S2.5 12 2.5 12Z"/>
+      <circle cx="12" cy="12" r="2.8"/>
+    </symbol>
+    <symbol id="icon-eye-off" viewBox="0 0 24 24">
+      <path d="m3 3 18 18"/>
+      <path d="M10.6 6.2A10.8 10.8 0 0 1 12 6c6 0 9.5 6 9.5 6a17.6 17.6 0 0 1-3.1 3.7"/>
+      <path d="M6.4 6.5C3.9 8.2 2.5 12 2.5 12s3.5 6 9.5 6a10.6 10.6 0 0 0 4.1-.8"/>
+      <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>
+    </symbol>
+  </svg>
+
+  <header class="site-header">
+    <div class="container header__inner">
+      <a class="brand" href="index.html" aria-label="LostLink home">
+        <span class="brand__word" aria-hidden="true">
+          <span>L</span><span class="brand__slot brand__slot--o"><svg viewBox="0 0 24 24"><use href="#icon-pin-filled"></use></svg></span><span>ST</span><span class="brand__space"></span><span>L</span><span class="brand__slot brand__slot--i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><use href="#icon-lens-i"></use></svg></span><span>NK</span>
+        </span>
+        <span class="brand__tagline">Campus Lost &amp; Found</span>
+      </a>
+
+      <nav class="header__nav" aria-label="Main navigation">
+        <a href="index.html">Home</a>
+        <a href="explore.html">Explore Items</a>
+        <a href="index.html#how-it-works">How It Works</a>
+      </nav>
+
+      <div class="header__actions">
+        <a class="header__signin" data-auth="guest" href="login.html">Sign In</a>
+        <a class="button button--small button--primary" data-auth="guest" href="register.html">Get Started</a>
+        <a class="header__signin" data-auth="user" href="dashboard.html" hidden>Dashboard</a>
+        <button class="button button--small button--secondary" type="button" data-logout data-auth="user" hidden>Log Out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-main auth-main" id="main">
+    <div class="container">
+      <div class="page-topbar">
+        <a class="back-home" href="index.html" aria-label="Back to Home" title="Back to Home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#icon-back"></use></svg>
+        </a>
+      </div>
+
+      <div class="auth-stage">
+        <section class="auth-showcase" id="authShowcase" aria-labelledby="authPageTitle">
+          <h1 class="sr-only" id="authPageTitle">Sign in or create a LostLink account</h1>
+
+          <section class="auth-panel auth-panel--login" id="loginPanel" aria-labelledby="loginTitle">
+            <div class="auth-form-inner">
+              <h2 id="loginTitle">Sign in</h2>
+              <p class="auth-intro">Use the email and password you registered with.</p>
+
+              <form class="auth-form" id="loginForm">
+                <div class="auth-field">
+                  <label for="loginEmail">Email address</label>
+                  <div class="auth-field__control">
+                    <input id="loginEmail" name="email" type="email" maxlength="254" autocomplete="email" autocapitalize="none" spellcheck="false" required placeholder="you@campus.edu">
+                    <span class="auth-field__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-mail"></use></svg></span>
+                  </div>
+                </div>
+
+                <div class="auth-field">
+                  <label for="loginPassword">Password</label>
+                  <div class="auth-field__control">
+                    <input id="loginPassword" name="password" type="password" maxlength="72" autocomplete="current-password" required placeholder="Enter your password">
+                    <button class="auth-field__toggle" type="button" data-password-toggle="loginPassword" aria-label="Show password" aria-pressed="false">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#icon-eye"></use></svg>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="form-message" id="loginMessage" role="status" aria-live="polite" hidden></div>
+
+                <button class="button button--primary auth-submit" id="loginButton" type="submit">
+                  <span id="loginButtonLabel">Sign In</span>
+                  <svg class="button__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#icon-arrow"></use></svg>
+                </button>
+              </form>
+
+              <p class="auth-switch">New to LostLink? <a class="auth-switch-link" href="register.html" data-auth-switch="register">Create an account</a></p>
+            </div>
+          </section>
+
+          <section class="auth-panel auth-panel--register" id="registerPanel" aria-labelledby="registerTitle" aria-hidden="true" inert>
+            <div class="auth-form-inner">
+              <h2 id="registerTitle">Create account</h2>
+              <p class="auth-intro">Use a real email address so you can sign back in later.</p>
+
+              <form class="auth-form" id="registerForm">
+                <div class="auth-field">
+                  <label for="registerName">Full name</label>
+                  <div class="auth-field__control">
+                    <input id="registerName" name="name" type="text" minlength="2" maxlength="80" autocomplete="name" required placeholder="Your name">
+                    <span class="auth-field__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-user"></use></svg></span>
+                  </div>
+                </div>
+
+                <div class="auth-field">
+                  <label for="registerEmail">Email address</label>
+                  <div class="auth-field__control">
+                    <input id="registerEmail" name="email" type="email" maxlength="254" autocomplete="email" autocapitalize="none" spellcheck="false" required placeholder="you@campus.edu">
+                    <span class="auth-field__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-mail"></use></svg></span>
+                  </div>
+                </div>
+
+                <div class="auth-field">
+                  <label for="registerPassword">Password</label>
+                  <div class="auth-field__control">
+                    <input id="registerPassword" name="password" type="password" minlength="8" maxlength="72" autocomplete="new-password" required placeholder="At least 8 characters">
+                    <button class="auth-field__toggle" type="button" data-password-toggle="registerPassword" aria-label="Show password" aria-pressed="false">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#icon-eye"></use></svg>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="auth-field">
+                  <label for="registerConfirm">Confirm password</label>
+                  <div class="auth-field__control">
+                    <input id="registerConfirm" name="confirmPassword" type="password" minlength="8" maxlength="72" autocomplete="new-password" required placeholder="Repeat your password">
+                    <button class="auth-field__toggle" type="button" data-password-toggle="registerConfirm" aria-label="Show confirm password" aria-pressed="false">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#icon-eye"></use></svg>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="form-message" id="registerMessage" role="status" aria-live="polite" hidden></div>
+
+                <button class="button button--primary auth-submit" id="registerButton" type="submit">
+                  <span id="registerButtonLabel">Create Account</span>
+                  <svg class="button__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#icon-arrow"></use></svg>
+                </button>
+              </form>
+
+              <p class="auth-switch">Already have an account? <a class="auth-switch-link" href="login.html" data-auth-switch="login">Sign in</a></p>
+            </div>
+          </section>
+
+          <aside class="auth-band" aria-hidden="true"></aside>
+
+          <div class="auth-promo-layer" role="complementary" aria-label="LostLink introduction">
+            <div class="auth-promo auth-promo--login" data-promo="login">
+              <div class="brand auth-brand">
+                <span class="brand__word" aria-hidden="true">
+                  <span>L</span><span class="brand__slot brand__slot--o"><svg viewBox="0 0 24 24"><use href="#icon-pin-filled"></use></svg></span><span>ST</span><span class="brand__space"></span><span>L</span><span class="brand__slot brand__slot--i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><use href="#icon-lens-i"></use></svg></span><span>NK</span>
+                </span>
+                <span class="brand__tagline">Campus Lost &amp; Found</span>
+              </div>
+              <div class="auth-promo__copy">
+                <h2>Welcome <em>back!</em></h2>
+                <p>Sign in to reconnect with your LostLink account and continue tracking your lost and found items.</p>
+              </div>
+            </div>
+
+            <div class="auth-promo auth-promo--register" data-promo="register" aria-hidden="true">
+              <div class="brand auth-brand">
+                <span class="brand__word" aria-hidden="true">
+                  <span>L</span><span class="brand__slot brand__slot--o"><svg viewBox="0 0 24 24"><use href="#icon-pin-filled"></use></svg></span><span>ST</span><span class="brand__space"></span><span>L</span><span class="brand__slot brand__slot--i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><use href="#icon-lens-i"></use></svg></span><span>NK</span>
+                </span>
+                <span class="brand__tagline">Campus Lost &amp; Found</span>
+              </div>
+              <div class="auth-promo__copy">
+                <h2>Start your <em>first page.</em></h2>
+                <p>Join LostLink to report lost items, discover found belongings, and help reunite people with what matters to them.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    <div class="container app-footer__inner">
+      <span>© 2026 LostLink. Built for campus communities.</span>
+      <nav aria-label="Footer navigation">
+        <a href="index.html">Home</a>
+        <a href="explore.html">Explore Items</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="app-utils.js" defer></script>
+  <script src="auth-nav.js" defer></script>
+  <script src="auth.js" defer></script>
+</body>
+</html>

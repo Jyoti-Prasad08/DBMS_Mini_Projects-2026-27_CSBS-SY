@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" class="intro-done">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Explore Items — LostLink</title>
+  <meta name="description" content="Browse lost and found reports from the LostLink campus community.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body class="app-page">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <svg class="icon-defs" aria-hidden="true" focusable="false">
+    <symbol id="icon-pin-filled" viewBox="0 0 24 24">
+      <path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 8 12 8 12s8-6.75 8-12c0-4.42-3.58-8-8-8Zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="icon-lens-i" viewBox="0 0 24 24">
+      <circle cx="12" cy="7.4" r="6.2"/>
+      <path d="M12 13.6V22"/>
+    </symbol>
+    <symbol id="icon-arrow" viewBox="0 0 24 24">
+      <path d="M5 12h14"/>
+      <path d="m13 6 6 6-6 6"/>
+    </symbol>
+    <symbol id="icon-back" viewBox="0 0 24 24">
+      <path d="M19 12H5"/>
+      <path d="m11 18-6-6 6-6"/>
+    </symbol>
+    <symbol id="icon-compass" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9"/>
+      <path d="m15.5 8.5-2 5-5 2 2-5 5-2Z"/>
+    </symbol>
+  </svg>
+
+  <header class="site-header">
+    <div class="container header__inner">
+      <a class="brand" href="index.html" aria-label="LostLink home">
+        <span class="brand__word" aria-hidden="true">
+          <span>L</span><span class="brand__slot brand__slot--o"><svg viewBox="0 0 24 24"><use href="#icon-pin-filled"></use></svg></span><span>ST</span><span class="brand__space"></span><span>L</span><span class="brand__slot brand__slot--i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><use href="#icon-lens-i"></use></svg></span><span>NK</span>
+        </span>
+        <span class="brand__tagline">Campus Lost &amp; Found</span>
+      </a>
+
+      <nav class="header__nav" aria-label="Main navigation">
+        <a href="index.html">Home</a>
+        <a href="explore.html" aria-current="page">Explore Items</a>
+        <a href="index.html#how-it-works">How It Works</a>
+      </nav>
+
+      <div class="header__actions">
+        <a class="header__signin" data-auth="guest" href="login.html">Sign In</a>
+        <a class="button button--small button--primary" data-auth="guest" href="register.html">Get Started</a>
+        <a class="header__signin" data-auth="user" href="dashboard.html" hidden>Dashboard</a>
+        <button class="button button--small button--secondary" type="button" data-logout data-auth="user" hidden>Log Out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-main" id="main">
+    <div class="container app-container app-container--wide">
+      <div class="page-topbar">
+        <a class="back-home" href="index.html" aria-label="Back to Home" title="Back to Home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#icon-back"></use></svg>
+        </a>
+      </div>
+
+      <div class="app-heading app-heading--row">
+        <div>
+          <span class="eyebrow">Live catalog</span>
+          <h1>Explore Items</h1>
+          <p>Browse real lost and found reports from the campus community.</p>
+        </div>
+        <a class="button button--primary" href="report.html?type=lost">
+          Report an item
+          <svg class="button__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#icon-arrow"></use></svg>
+        </a>
+      </div>
+
+      <form class="filter-bar" id="filterForm">
+        <label class="filter-field filter-field--search">
+          <span class="sr-only">Search reports</span>
+          <input type="search" name="search" placeholder="Search title or description" aria-label="Search reports by title or description">
+        </label>
+        <label class="filter-field">
+          <span class="sr-only">Filter by type</span>
+          <select name="type" aria-label="Filter by type">
+            <option value="">All types</option>
+            <option value="lost">Lost</option>
+            <option value="found">Found</option>
+          </select>
+        </label>
+        <label class="filter-field">
+          <span class="sr-only">Filter by category</span>
+          <select name="category" aria-label="Filter by category">
+            <option value="">All categories</option>
+            <option value="electronics">Electronics</option>
+            <option value="phone">Phone</option>
+            <option value="laptop">Laptop</option>
+            <option value="wallet">Wallet</option>
+            <option value="keys">Keys</option>
+            <option value="bag">Bag</option>
+            <option value="clothing">Clothing</option>
+            <option value="books">Books</option>
+            <option value="id-card">ID / card</option>
+            <option value="jewelry">Jewelry</option>
+            <option value="other">Other</option>
+          </select>
+        </label>
+        <label class="filter-field">
+          <span class="sr-only">Filter by campus location</span>
+          <input type="search" name="location" placeholder="Campus location" aria-label="Filter by campus location">
+        </label>
+        <label class="filter-field">
+          <span class="sr-only">Filter by status</span>
+          <select name="status" aria-label="Filter by status">
+            <option value="">All statuses</option>
+            <option value="open">Open</option>
+            <option value="claimed">Claimed</option>
+            <option value="returned">Returned</option>
+            <option value="resolved">Resolved</option>
+          </select>
+        </label>
+        <button class="button button--primary button--compact" type="submit">Filter</button>
+        <button class="button button--secondary button--compact" id="clearFilters" type="button">Clear</button>
+      </form>
+
+      <div class="results-bar">
+        <p id="resultsMeta" role="status" aria-live="polite">Loading reports…</p>
+      </div>
+
+      <div class="item-grid" id="itemGrid" aria-busy="true" aria-live="polite"></div>
+
+      <div class="empty-state" id="emptyState" hidden>
+        <span class="empty-state__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-compass"></use></svg>
+        </span>
+        <h2>No reports to show</h2>
+        <p id="emptyMessage">There are no lost or found reports yet. Start the first one.</p>
+        <div class="empty-state__actions">
+          <a class="button button--primary" href="report.html?type=lost">Report a lost item</a>
+          <a class="button button--secondary" href="report.html?type=found">Report a found item</a>
+        </div>
+      </div>
+
+      <div class="form-message is-error" id="errorState" role="alert" hidden></div>
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    <div class="container app-footer__inner">
+      <span>© 2026 LostLink. Built for campus communities.</span>
+      <nav aria-label="Footer navigation">
+        <a href="index.html">Home</a>
+        <a href="report.html?type=lost">Report an item</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="app-utils.js" defer></script>
+  <script src="auth-nav.js" defer></script>
+  <script src="explore.js" defer></script>
+</body>
+</html>

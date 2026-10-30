@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LostLink — Campus Lost &amp; Found</title>
+  <meta name="description" content="LostLink is the smartest way to recover lost items on campus. Report what is missing, post what you found, and explore matches.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    // Decide before first paint whether the opening animation should run.
+    (function () {
+      var introSeen = false;
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      try {
+        introSeen = sessionStorage.getItem('lostlink-intro-seen') === '1';
+      } catch (error) {
+        introSeen = false;
+      }
+      document.documentElement.classList.add(introSeen || reduceMotion ? 'intro-done' : 'intro-pending');
+    })();
+  </script>
+  <noscript>
+    <style>
+      .intro { display: none !important; }
+      .brand__slot svg { opacity: 1 !important; transform: none !important; }
+    </style>
+  </noscript>
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- Shared line icons -->
+  <svg class="icon-defs" aria-hidden="true" focusable="false">
+    <symbol id="icon-pin-filled" viewBox="0 0 24 24">
+      <path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 8 12 8 12s8-6.75 8-12c0-4.42-3.58-8-8-8Zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="icon-pin" viewBox="0 0 24 24">
+      <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/>
+      <circle cx="12" cy="10" r="2.5"/>
+    </symbol>
+    <symbol id="icon-search" viewBox="0 0 24 24">
+      <circle cx="10.5" cy="10.5" r="6.5"/>
+      <path d="m15.3 15.3 5.2 5.2"/>
+    </symbol>
+    <symbol id="icon-lens-i" viewBox="0 0 24 24">
+      <circle cx="12" cy="7.4" r="6.2"/>
+      <path d="M12 13.6V22"/>
+    </symbol>
+    <symbol id="icon-key" viewBox="0 0 24 24">
+      <path d="m21 2-9.6 9.6"/>
+      <circle cx="7.5" cy="15.5" r="5.5"/>
+      <path d="m15.5 7.5 3 3L22 7l-3-3"/>
+    </symbol>
+    <symbol id="icon-eye" viewBox="0 0 24 24">
+      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/>
+      <circle cx="12" cy="12" r="3"/>
+    </symbol>
+    <symbol id="icon-help" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9"/>
+      <path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2.6-3 4"/>
+      <circle cx="12" cy="17" r="0.8" fill="currentColor" stroke="none"/>
+    </symbol>
+    <symbol id="icon-box" viewBox="0 0 24 24">
+      <path d="m21 8-9-5-9 5 9 5 9-5Z"/>
+      <path d="M3 8v8l9 5 9-5V8"/>
+      <path d="M12 13v8"/>
+    </symbol>
+    <symbol id="icon-compass" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9"/>
+      <path d="m15.5 8.5-2 5-5 2 2-5 5-2Z"/>
+    </symbol>
+    <symbol id="icon-arrow" viewBox="0 0 24 24">
+      <path d="M5 12h14"/>
+      <path d="m13 6 6 6-6 6"/>
+    </symbol>
+    <symbol id="icon-lock" viewBox="0 0 24 24">
+      <rect x="5" y="10" width="14" height="10" rx="2"/>
+      <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+    </symbol>
+    <symbol id="icon-desk" viewBox="0 0 24 24">
+      <path d="M3 21h18"/>
+      <path d="M5 21V8h14v13"/>
+      <path d="M9 8V5h6v3"/>
+      <path d="M9 13h6"/>
+    </symbol>
+    <symbol id="icon-clock" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9"/>
+      <path d="M12 7v5l3 2"/>
+    </symbol>
+  </svg>
+
+  <!-- Opening animation -->
+  <div class="intro" id="intro" role="dialog" aria-label="LostLink opening animation">
+    <button class="intro__skip" id="skipIntro" type="button">
+      <span>Skip Intro</span>
+      <kbd>Esc</kbd>
+    </button>
+
+    <div class="intro__stage">
+      <div class="intro__display">
+        <div class="intro__halo" aria-hidden="true"></div>
+        <div class="intro__ring" aria-hidden="true"></div>
+
+        <div class="intro__cycle" id="introCycle" aria-hidden="true">
+          <svg class="intro__icon is-active" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-search"></use></svg>
+          <svg class="intro__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-key"></use></svg>
+          <svg class="intro__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-eye"></use></svg>
+          <svg class="intro__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-help"></use></svg>
+          <svg class="intro__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-pin"></use></svg>
+        </div>
+
+        <div class="intro__resolved" id="introResolved" aria-hidden="true">
+          <div class="intro__token" id="introPin">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-pin"></use></svg>
+          </div>
+          <div class="intro__token" id="introLens">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-lens-i"></use></svg>
+          </div>
+        </div>
+      </div>
+
+      <p class="intro__status" id="introStatus">Calibrating campus match vectors…</p>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container header__inner">
+      <a class="brand" href="#home" aria-label="LostLink home">
+        <span class="brand__word" aria-hidden="true">
+          <span>L</span><span class="brand__slot brand__slot--o" id="logoSlotO"><svg viewBox="0 0 24 24"><use href="#icon-pin-filled"></use></svg></span><span>ST</span><span class="brand__space"></span><span>L</span><span class="brand__slot brand__slot--i" id="logoSlotI"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><use href="#icon-lens-i"></use></svg></span><span>NK</span>
+        </span>
+        <span class="brand__tagline">Campus Lost &amp; Found</span>
+      </a>
+
+      <nav class="header__nav" aria-label="Main navigation">
+        <a href="#home">Home</a>
+        <a href="explore.html">Explore Items</a>
+        <a href="#how-it-works">How It Works</a>
+      </nav>
+
+      <div class="header__actions">
+        <a class="header__signin" data-auth="guest" href="login.html">Sign In</a>
+        <a class="button button--small button--primary" data-auth="guest" href="register.html">Get Started</a>
+        <a class="header__signin" data-auth="user" href="dashboard.html" hidden>Dashboard</a>
+        <button class="button button--small button--secondary" type="button" data-logout data-auth="user" hidden>Log Out</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Hero -->
+    <section class="hero" id="home">
+      <div class="hero__glow hero__glow--left" aria-hidden="true"></div>
+      <div class="hero__glow hero__glow--right" aria-hidden="true"></div>
+
+      <div class="container hero__grid">
+        <div class="hero__copy">
+          <h1 class="hero__title">
+            Don't Panic.
+            <span>We'll Find It.</span>
+          </h1>
+          <p class="hero__lead">The smartest way to recover lost items on campus. Connect with peers, report items, and get back what belongs to you.</p>
+          <div class="hero__actions">
+            <a class="button button--primary" href="report.html?type=lost">
+              I Lost Something
+              <svg class="button__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#icon-arrow"></use></svg>
+            </a>
+            <a class="button button--secondary" href="report.html?type=found">
+              I Found Something
+              <svg class="button__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#icon-search"></use></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="hero__visual" id="lensArea">
+          <div class="lens-orbit lens-orbit--outer" aria-hidden="true"></div>
+          <div class="lens-orbit lens-orbit--inner" aria-hidden="true"></div>
+          <div class="lens-glow" aria-hidden="true"></div>
+
+          <div class="lens-tilt" id="lensTilt">
+            <div class="lens-float">
+              <img class="lens-image" src="assets/magnifier.png" alt="An oversized blue magnifying glass floating above a dark navy surface" width="512" height="512">
+              <div class="lens-shine" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero cards -->
+      <div class="container hero__cards-wrap">
+        <div class="hero__cards">
+          <a class="quick-card" href="report.html?type=lost">
+            <div class="quick-card__body">
+              <span class="quick-card__eyebrow">Lost something?</span>
+              <h2>Report a Lost Item</h2>
+              <p>Log what's missing with a photo, location, and a few key details.</p>
+            </div>
+            <span class="quick-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-search"></use></svg>
+            </span>
+          </a>
+
+          <a class="quick-card" href="report.html?type=found">
+            <div class="quick-card__body">
+              <span class="quick-card__eyebrow">Found something?</span>
+              <h2>Report a Found Item</h2>
+              <p>Post what you found so it can be matched back to its owner.</p>
+            </div>
+            <span class="quick-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-box"></use></svg>
+            </span>
+          </a>
+
+          <a class="quick-card quick-card--accent" href="explore.html">
+            <div class="quick-card__body">
+              <span class="quick-card__eyebrow">Still looking?</span>
+              <h2>Explore Matches</h2>
+              <p>Browse current listings and reconnect with what you've lost.</p>
+            </div>
+            <span class="quick-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-compass"></use></svg>
+            </span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="section section--steps" id="how-it-works">
+      <div class="container">
+        <div class="section__heading">
+          <span class="eyebrow">Simple by design</span>
+          <h2>How It Works</h2>
+          <p class="flow-line" aria-label="Report, Match, Verify, Return">
+            <span>Report</span><span class="flow-line__arrow" aria-hidden="true">→</span>
+            <span>Match</span><span class="flow-line__arrow" aria-hidden="true">→</span>
+            <span>Verify</span><span class="flow-line__arrow" aria-hidden="true">→</span>
+            <span>Return</span>
+          </p>
+        </div>
+
+        <div class="steps">
+          <article class="step">
+            <span class="step__num">01</span>
+            <h3>Report</h3>
+            <p>Log the item with a photo, location, and timestamp.</p>
+          </article>
+          <article class="step">
+            <span class="step__num">02</span>
+            <h3>Match</h3>
+            <p>Browse suggested matches from campus listings.</p>
+          </article>
+          <article class="step">
+            <span class="step__num">03</span>
+            <h3>Verify</h3>
+            <p>Confirm ownership with a private challenge.</p>
+          </article>
+          <article class="step">
+            <span class="step__num">04</span>
+            <h3>Return</h3>
+            <p>Coordinate a safe handover at a campus desk.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trust and safety -->
+    <section class="section section--trust" id="trust-safety">
+      <div class="container trust">
+        <div class="trust__intro">
+          <span class="eyebrow">Trust &amp; Safety</span>
+          <h2>Recovery should feel safe, not stressful.</h2>
+          <p>Private details stay private until a claim is verified, and handovers happen at trusted campus locations.</p>
+        </div>
+
+        <div class="trust__cards">
+          <article class="trust-card">
+            <span class="trust-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-lock"></use></svg>
+            </span>
+            <h3>Private by default</h3>
+            <p>Contact details stay hidden until a claim is verified.</p>
+          </article>
+          <article class="trust-card">
+            <span class="trust-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-desk"></use></svg>
+            </span>
+            <h3>Verified handover</h3>
+            <p>Arrange pickups at trusted campus help desks and hubs.</p>
+          </article>
+          <article class="trust-card">
+            <span class="trust-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-clock"></use></svg>
+            </span>
+            <h3>Clear records</h3>
+            <p>Every report is timestamped and easy to reference.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Final call to action -->
+    <section class="section section--cta">
+      <div class="container">
+        <div class="cta-panel">
+          <div class="cta-panel__copy">
+            <h2>Lost something on campus? Start your search in seconds.</h2>
+            <p>Report it in a couple of minutes, or browse what others have found.</p>
+          </div>
+          <div class="cta-panel__actions">
+            <a class="button button--light" href="report.html?type=lost">Report a Lost Item</a>
+            <a class="button button--outline" href="explore.html">Explore Items</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer__top">
+        <div class="footer__brand">
+          <a class="footer__logo" href="#home">LostLink</a>
+          <p>A smarter lost &amp; found for campus communities.</p>
+        </div>
+        <nav class="footer__nav" aria-label="Footer navigation">
+          <div>
+            <h2>Platform</h2>
+            <a href="explore.html">Explore Items</a>
+            <a href="#how-it-works">How It Works</a>
+            <a href="#trust-safety">Trust &amp; Safety</a>
+          </div>
+          <div>
+            <h2>Account</h2>
+            <a href="login.html" data-auth="guest">Sign In</a>
+            <a href="register.html" data-auth="guest">Get Started</a>
+            <a href="dashboard.html" data-auth="user" hidden>Dashboard</a>
+          </div>
+        </nav>
+      </div>
+      <div class="footer__bottom">
+        <span>© 2026 LostLink. Built for campus communities.</span>
+        <a href="#home">Back to top ↑</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js" defer></script>
+  <script src="auth-nav.js" defer></script>
+</body>
+</html>
